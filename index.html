@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>📍 Location Tracker Admin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      color: #333;
+      background:
+        linear-gradient(rgba(255 255 255 / 0.85), rgba(255 255 255 / 0.85)),
+        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      transition: background 0.5s ease;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2.8rem;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #1e3a8a;
+      animation: fadeSlideDown 0.8s ease forwards;
+      opacity: 0;
+    }
+    h1::before {
+      content: "📍";
+      font-size: 2.1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .generate-section, .view-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 24px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 6px 20px rgb(59 130 246 / 0.2);
+      margin-bottom: 40px;
+      animation: fadeSlideUp 1s ease forwards;
+      opacity: 0;
+    }
+
+    .generate-section button, .view-section button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgb(37 99 235 / 0.4);
+      transition: background-color 0.3s ease, transform 0.25s ease;
+      user-select: none;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+    .generate-section button:hover, .view-section button:hover {
+      background-color: #1e40af;
+      transform: scale(1.05);
+    }
+    .generate-section button:active, .view-section button:active {
+      transform: scale(0.98);
+    }
+
+    .link-display {
+      margin-top: 10px;
+      font-weight: 600;
+      color: #2563eb;
+      user-select: all;
+      word-break: break-word;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    #copyLinkBtn {
+      background-color: #0a64d8;
+      border: none;
+      padding: 6px 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgb(10 100 216 / 0.6);
+      color: white;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-size: 0.9rem;
+    }
+    #copyLinkBtn:hover {
+      background-color: #0849a3;
+    }
+    #copyLinkBtn:active {
+      transform: scale(0.95);
+    }
+
+    label {
+      font-weight: 600;
+      color: #1e3a8a;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 2px solid #2563eb;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #1e40af;
+    }
+
+    #logs {
+      max-width: 600px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 220px;
+      font-size: 1rem;
+      animation: fadeSlideUp 1.2s ease forwards;
+      opacity: 0;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 6px 24px rgb(59 130 246 / 0.2);
+      color: #333;
+      overflow-wrap: break-word;
+    }
+
+    .log-card {
+      background: #e3f2fd;
+      border-radius: 12px;
+      padding: 15px 20px;
+      box-shadow: 0 8px 24px rgb(37 99 235 / 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      cursor: default;
+      color: #0d47a1;
+    }
+    .log-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px rgb(37 99 235 / 0.3);
+    }
+    .log-card strong {
+      color: #0d47a1;
+    }
+    .map-link {
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+    .map-link a {
+      color: #0a64d8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .map-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes fadeSlideDown {
+      from {opacity: 0; transform: translateY(-30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeSlideUp {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      .generate-section, .view-section, #logs {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Location Tracker Admin</h1>
+
+  <section class="generate-section" aria-label="Generate Tracking Link">
+    <button id="generateBtn">Generate New Track Link</button>
+    <div class="link-display" aria-live="polite" id="generatedLinkContainer" style="display:none;">
+      <span id="generatedLink"></span>
+      <button id="copyLinkBtn" aria-label="Copy generated link">Copy Link</button>
+    </div>
+  </section>
+
+  <section class="view-section" aria-label="View Location By ID">
+    <label for="trackIdInput">Enter Tracking ID to View Location:</label>
+    <input type="text" id="trackIdInput" placeholder="e.g. a1b2c3d4" autocomplete="off" />
+    <button id="viewBtn">View Location</button>
+  </section>
+
+  <div id="logs">Enter a tracking ID and click "View Location" to see updates.</div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Your Firebase config here - REPLACE with your own config:
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCOU_rmxKopnM8I4DNd3JWsd7W3xWxKuU",
+      authDomain: "locationtracker-ff2c8.firebaseapp.com",
+      databaseURL: "https://locationtracker-ff2c8-default-rtdb.firebaseio.com",
+      projectId: "locationtracker-ff2c8",
+      storageBucket: "locationtracker-ff2c8.firebasestorage.app",
+      messagingSenderId: "531842224993",
+      appId: "1:531842224993:web:6dff1fce6d182ad3186b20",
+      measurementId: "G-N5FM7DT3T9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const generateBtn = document.getElementById('generateBtn');
+    const generatedLink = document.getElementById('generatedLink');
+    const generatedLinkContainer = document.getElementById('generatedLinkContainer');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const trackIdInput = document.getElementById('trackIdInput');
+    const viewBtn = document.getElementById('viewBtn');
+    const logsEl = document.getElementById('logs');
+
+    // Generate random 8-char ID (letters+numbers)
+    function generateId() {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for(let i=0; i<8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    // Show generated track link
+    generateBtn.onclick = () => {
+      const newId = generateId();
+      const baseURL = window.location.href.replace("index.html", "");
+      const link = `${baseURL}track.html?id=${newId}`;
+      generatedLink.textContent = link;
+      generatedLinkContainer.style.display = 'flex';
+
+      // Also autofill input to view it if you want
+      trackIdInput.value = newId;
+
+      // Clear previous logs & set focus to input
+      logsEl.innerHTML = "Enter a tracking ID and click \"View Location\" to see updates.";
+      logsEl.style.opacity = 1;
+      trackIdInput.focus();
+    };
+
+    copyLinkBtn.onclick = () => {
+      const linkText = generatedLink.textContent;
+      navigator.clipboard.writeText(linkText).then(() => {
+        copyLinkBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyLinkBtn.textContent = "Copy Link";
+        }, 2000);
+      }).catch(() => {
+        alert("Failed to copy the link.");
+      });
+    };
+
+    // Clear previous listeners before attaching new one
+    let currentListener = null;
+
+    // View locations for given ID
+    viewBtn.onclick = () => {
+      const id = trackIdInput.value.trim();
+      if (!id) {
+        alert("Please enter a valid tracking ID.");
+        return;
+      }
+
+      // Remove previous listener if exists
+      if(currentListener) {
+        currentListener.off();
+      }
+
+      logsEl.innerHTML = "Loading location data...";
+      logsEl.style.opacity = 1;
+
+      const locRef = db.ref(`locations/${id}`);
+
+      // Listen for location data updates of this user ID
+      currentListener = locRef;
+      locRef.on('value', snapshot => {
+        const data = snapshot.val();
+        logsEl.innerHTML = "";
+        if(data) {
+          const entries = Object.entries(data).reverse();
+          entries.forEach(([key, loc]) => {
+            const card = document.createElement('div');
+            card.className = 'log-card';
+            card.innerHTML = `
+              <p><strong>Latitude:</strong> ${loc.latitude}</p>
+              <p><strong>Longitude:</strong> ${loc.longitude}</p>
+              <p><strong>Time:</strong> ${loc.timestamp}</p>
+              <div class="map-link">
+                <a href="https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}" target="_blank" rel="noopener noreferrer">
+                  View on Google Maps
+                </a>
+              </div>
+            `;
+            logsEl.appendChild(card);
+          });
+        } else {
+          logsEl.innerHTML = "<p>No location data found for this ID yet.</p>";
+        }
+      });
+    };
+  </script>
+
+</body>
+</html>

